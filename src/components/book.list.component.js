@@ -1,129 +1,137 @@
-import React from 'react';
-//import React, { useState, useEffect } from 'react';
-//import { Table, Button, Alert } from 'react-bootstrap';
-import { Button } from 'react-bootstrap';
+import React from "react";
+import { Button } from "react-bootstrap";
+import Figure from "react-bootstrap/Figure";
+import ReactPaginate from "react-paginate";
 
-import ReactPaginate from 'react-paginate';
-
-class  BookList extends React.Component {
-
+class BookList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      error: null,     
+      error: null,
       books: [],
-      response: {},
       offset: 0,
-      data: [],
+      autors: [],
       perPage: 2,
-      currentPage: 0
-    }
-
+      currentPage: 0,
+    };
   }
 
   handlePageClick = (e) => {
     const selectedPage = e.selected;
     const offset = selectedPage * this.state.perPage;
 
-    this.setState({
+    this.setState(
+      {
         currentPage: selectedPage,
-        offset: offset
-    }, () => {
-        this.getbooks()
-    });
-
-};
+        offset: offset,
+      },
+      () => {
+        this.getbooks();
+      }
+    );
+  };
 
   componentDidMount() {
-   this.getbooks();
+    this.getbooks();
   }
 
-  getbooks(){
-
-    const apiUrl = 'https://ingenierosierradiaz.com/library/api/books';
+  getbooks() {
+    const apiUrl = "https://ingenierosierradiaz.com/library/api/books";
 
     fetch(apiUrl)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(
         (result) => {
-
           this.setState({
-            books: result.data
+            books: result.data,
           });
 
           const data = result.data;
-          const slice = data.slice(this.state.offset, this.state.offset + this.state.perPage)
-          const bookData = slice.map(book => <React.Fragment>
-            
-            <ul class="list-group">
-            <li class="list-group-item">
-            <p>ISBN {book.isbn}</p>
-            <p>{book.title}</p>
-            <p>
-            <>
-            <Button variant="danger" onClick={() => this.deleteBook(book.isbn)}>Delete</Button>
-            </>
-            </p>
-            
-            </li>
-         
-            </ul>              
-             
-          </React.Fragment>)
+          const slice = data.slice(
+            this.state.offset,
+            this.state.offset + this.state.perPage
+          );
+          const bookData = slice.map((book) => (
+            <React.Fragment>
+              <ul class="list-group">
+                <li class="list-group-item">
+                  <p>
+                    <h5 className="subheading"> ISBN </h5>
+                    {book.isbn}
+                  </p>
+                  <p>
+                    <Figure>
+                      <Figure.Image
+                        width={171}
+                        height={180}
+                        alt="171x180"
+                        src={book.cover_large}
+                      />
+                      <Figure.Caption>{book.title}</Figure.Caption>
+                    </Figure>
+                  </p>
+                  <p>
+                    <>
+                      <Button
+                        variant="danger"
+                        onClick={() => this.deleteBook(book.isbn)}
+                      >
+                        Delete
+                      </Button>
+                    </>
+                  </p>
+                </li>
+              </ul>
+            </React.Fragment>
+          ));
 
           this.setState({
-          pageCount: Math.ceil(data.length / this.state.perPage),
- 
-         bookData
-         })
+            pageCount: Math.ceil(data.length / this.state.perPage),
 
-         
+            bookData,
+          });
         },
         (error) => {
           this.setState({ error });
         }
-      )
+      );
   }
 
-  deleteBook(id) {  
-
-    const apiUrl = 'https://ingenierosierradiaz.com/library/api/books/delete/'+id; 
+  deleteBook(id) {
+    const apiUrl =
+      "https://ingenierosierradiaz.com/library/api/books/delete/" + id;
 
     const options = {
-      method: 'DELETE',    
-    }
+      method: "DELETE",
+    };
 
     fetch(apiUrl, options)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(
         (result) => {
-          //console.log(result)
-         
           this.setState({
-            response: result.message,            
+            response: result.message,
           });
-          alert('Registro Eliminado !');
+          alert("Registro Eliminado !");
 
           this.getbooks();
         },
         (error) => {
           this.setState({ error });
         }
-      )
+      );
   }
 
   render() {
-    const { error, books} = this.state;
+    const { error } = this.state;
 
-    if(error) {
-      return (
-        <div>Error: {error.message}</div>
-      )
+    if (error) {
+      return <div>Error: {error.message}</div>;
     } else {
-      return(
+      return (
         <div>
-        {this.state.bookData}
-        <ReactPaginate
+          {this.state.bookData}
+          <ReactPaginate
             previousLabel={"prev"}
             nextLabel={"next"}
             breakLabel={"..."}
@@ -134,10 +142,10 @@ class  BookList extends React.Component {
             onPageChange={this.handlePageClick}
             containerClassName={"pagination"}
             subContainerClassName={"pages pagination"}
-            activeClassName={"active"}/>
+            activeClassName={"active"}
+          />
         </div>
-      
-      )
+      );
     }
   }
 }
