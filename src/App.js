@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Container, Button, Alert } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import BookList from './components/book.list.component';
 
 
@@ -12,8 +12,7 @@ class App extends Component {
       <div className="App">
         <Container>        
           <BookList/>             
-        </Container>
-  
+        </Container>  
       </div>
     );
   }

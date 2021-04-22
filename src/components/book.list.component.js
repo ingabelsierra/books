@@ -1,6 +1,7 @@
 import React from 'react';
 //import React, { useState, useEffect } from 'react';
 //import { Table, Button, Alert } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
 import ReactPaginate from 'react-paginate';
 
@@ -39,7 +40,7 @@ class  BookList extends React.Component {
 
   getbooks(){
 
-    const apiUrl = 'http://localhost/library/public/api/books';
+    const apiUrl = 'https://ingenierosierradiaz.com/library/api/books';
 
     fetch(apiUrl)
       .then(res => res.json())
@@ -52,16 +53,28 @@ class  BookList extends React.Component {
 
           const data = result.data;
           const slice = data.slice(this.state.offset, this.state.offset + this.state.perPage)
-          const postData = slice.map(pd => <React.Fragment>
-              <p>{pd.isbn}</p>
-              <p>{pd.title}</p>
-              <p><button onClick={() => this.deleteBook(pd.isbn)}> Delete </button></p> 
+          const bookData = slice.map(book => <React.Fragment>
+            
+            <ul class="list-group">
+            <li class="list-group-item">
+            <p>ISBN {book.isbn}</p>
+            <p>{book.title}</p>
+            <p>
+            <>
+            <Button variant="danger" onClick={() => this.deleteBook(book.isbn)}>Delete</Button>
+            </>
+            </p>
+            
+            </li>
+         
+            </ul>              
+             
           </React.Fragment>)
 
           this.setState({
           pageCount: Math.ceil(data.length / this.state.perPage),
  
-         postData
+         bookData
          })
 
          
@@ -74,7 +87,7 @@ class  BookList extends React.Component {
 
   deleteBook(id) {  
 
-    const apiUrl = 'http://localhost/library/public/api/books/delete/'+id; 
+    const apiUrl = 'https://ingenierosierradiaz.com/library/api/books/delete/'+id; 
 
     const options = {
       method: 'DELETE',    
@@ -109,7 +122,7 @@ class  BookList extends React.Component {
     } else {
       return(
         <div>
-        {this.state.postData}
+        {this.state.bookData}
         <ReactPaginate
             previousLabel={"prev"}
             nextLabel={"next"}
